@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Automated psychometric network analysis</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Automated psychometric network
+analysis</h1>
+
+
+
+<p><code>network_auto()</code> optionally runs unique variable analysis
+(UVA), then estimates an EGA network with Spearman correlations,
+EBICglasso (gamma .5) and consensus Louvain. These are prespecified
+choices, not a claim that one estimator is best for every scale. English
+is the primary reporting language; use <code>language=&quot;esp&quot;</code> for
+Spanish. All stages keep their native results, conditions and package
+versions.</p>
+<p>Choose <code>model=&quot;glasso&quot;</code>, <code>&quot;TMFG&quot;</code>, or
+<code>&quot;BGGM&quot;</code>, and <code>algorithm=&quot;louvain&quot;</code>,
+<code>&quot;leiden&quot;</code>, or <code>&quot;walktrap&quot;</code>. Defaults remain
+GLASSO and consensus Louvain. The selected estimator is propagated to
+bootEGA, bootnet, NCT and loading permutations. The selected algorithm
+applies to empirical and group EGA and both hierEGA orders. Non-Louvain
+choices use LE for the separate unidimensional check; Leiden explicitly
+uses EGAnet’s modularity objective. Loading permutations use fixed
+communities and Walktrap/LE for unused membership checks. EGAnet 2.4.1
+disables BGGM internally; PsychoMatic preserves that native error
+without substituting another estimator. TMFG edges are filtered
+correlations, not partial correlations. Gamma affects GLASSO only. UVA
+retains its independent native redundancy estimator. TMFG hierarchy
+orders need at least four nodes. EGAnet can also fail in riEGA
+bootstraps with an invalid correlation missing-data argument for some
+options. These optional native failures are recorded with explanations;
+no method is silently replaced and earlier valid results remain
+available.</p>
+<p><code>bootstrap_type=&quot;resampling&quot;</code> draws participant rows with
+replacement; <code>bootstrap_type=&quot;parametric&quot;</code> simulates
+continuous multivariate-normal data from the empirical correlation
+matrix. It does not retain ordinal categories: with
+<code>corr=&quot;polychoric&quot;</code>, native auto correlation classifies
+continuous replicates as continuous. These options govern structural
+EGA, configural, riEGA and hierEGA bootstraps. Neither is automatically
+declared best. bootnet edge precision remains nonparametric and
+centrality stability remains case-drop (Christensen &amp; Golino, 2021;
+Epskamp et al., 2018). Use
+<code>network_plots(fit, &quot;figures&quot;, label_cex=1.5)</code> to enlarge
+node labels further when reducing figures for publication; default label
+size is 1.2 without automatic shrinking.</p>
+<p>Choose <code>corr=&quot;polychoric&quot;</code> for ordinal items (binary items
+use the corresponding tetrachoric correlation), or
+<code>corr=&quot;pearson&quot;</code> for Pearson correlations. The polychoric
+option requires every item to be ordinal; numeric integer items with at
+most seven observed categories are recognized by the specification.
+Declare other ordinal encodings with
+<code>psychomatic_spec(..., level=&quot;ordinal&quot;)</code>. The installed
+EGAnet polychoric estimator supports up to 11 categories per item. The
+EGAnet <code>auto</code> estimator is constrained to classify all
+selected item columns as ordinal. Correlations are re-estimated from
+response rows inside every bootstrap and permutation; a fixed
+correlation matrix is never resampled. For <code>hierEGA</code>,
+higher-order network scores are continuous and native <code>auto</code>
+uses Pearson correlations for those scores when their category count
+exceeds the declared ordinal threshold. RI residuals are correlation
+matrices, not recoded ordinal response data. EGAnet 2.4.1
+<code>riEGA</code> ignores a nondefault ordinal category threshold in
+its initial correlation calculation: when any item has more than seven
+categories, the polychoric riEGA stage is explicitly not evaluable
+rather than silently switching to mixed correlations.</p>
+<p><code>seed=NULL</code> (default) draws one analysis seed from the
+session RNG without imposing a fixed seed. That double-precision seed is
+passed to all native stages, including EGAnet routines whose own NULL
+option is not controlled by R’s RNG. It is recorded in
+<code>fit$effective_settings$seed</code>; <code>set.seed()</code> before
+the call controls the draw. Set <code>seed=2026</code> (or
+<code>2026L</code>) to replay an analysis without advancing the caller’s
+RNG state. The method reports the seed and its origin. Package versions
+remain in <code>fit$diagnostics$versions</code>, outside reader-facing
+reports.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> PsychoMatic<span class="sc">::</span><span class="fu">network_auto</span>(my_data, <span class="at">items=</span><span class="fu">paste0</span>(<span class="st">&quot;I&quot;</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>), <span class="at">group=</span><span class="st">&quot;sex&quot;</span>,</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="at">reverse=</span><span class="fu">c</span>(<span class="st">&quot;I3&quot;</span>,<span class="st">&quot;I8&quot;</span>), <span class="at">ranges=</span><span class="fu">list</span>(<span class="at">I3=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">5</span>), <span class="at">I8=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">5</span>)), <span class="at">seed=</span><span class="dv">2026</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">print</span>(fit)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">plot</span>(fit, <span class="at">type=</span><span class="st">&quot;network&quot;</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">plot</span>(fit, <span class="at">type=</span><span class="st">&quot;ega_stability&quot;</span>) <span class="co"># EGA network and item replication, side by side</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>PsychoMatic<span class="sc">::</span><span class="fu">network_plots</span>(fit, <span class="st">&quot;figures&quot;</span>, <span class="at">formats=</span><span class="fu">c</span>(<span class="st">&quot;pdf&quot;</span>,<span class="st">&quot;svg&quot;</span>,<span class="st">&quot;png&quot;</span>))</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>PsychoMatic<span class="sc">::</span><span class="fu">psychomatic_report</span>(fit, <span class="at">format=</span><span class="fu">c</span>(<span class="st">&quot;word&quot;</span>,<span class="st">&quot;excel&quot;</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="at">file_name=</span><span class="st">&quot;network_results&quot;</span>, <span class="at">language=</span><span class="st">&quot;eng&quot;</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>PsychoMatic<span class="sc">::</span><span class="fu">psychomatic_report</span>(fit, <span class="at">format=</span><span class="fu">c</span>(<span class="st">&quot;word&quot;</span>,<span class="st">&quot;excel&quot;</span>),</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="at">file_name=</span><span class="st">&quot;resultados_red&quot;</span>, <span class="at">language=</span><span class="st">&quot;esp&quot;</span>)</span></code></pre></div>
+<p>Reader reports include signed cross-loadings beneath primary loadings
+and a complete item stability table beneath community structural
+consistency. Empty assigned-community cells in the cross-loading table
+refer to primary loadings reported above. Loading magnitude uses
+unrounded values.</p>
+<p>Publication figures use colored replication points and shared layouts
+for group networks. In a two-group comparison, thick orange node borders
+indicate complete BH-significant loading differences; gray borders mean
+no difference detected, and squares mean unavailable tests.
+Non-significance does not imply equivalence. The combined
+<code>ega_stability</code> panel is selected by default when bootstrap
+results exist. Standalone network and stability figures remain available
+explicitly.</p>
+<p>Optional dependencies are <code>EGAnet</code> (&gt;=2.0.7),
+<code>bootnet</code>, <code>NetworkComparisonTest</code>,
+<code>igraph</code>, and <code>qgraph</code>. Install these explicitly
+before analysis; PsychoMatic never installs packages during a user’s
+analysis. Word requires <code>officer</code>/<code>flextable</code>;
+Excel requires <code>openxlsx</code>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">&quot;EGAnet&quot;</span>,<span class="st">&quot;bootnet&quot;</span>,<span class="st">&quot;NetworkComparisonTest&quot;</span>,<span class="st">&quot;igraph&quot;</span>,<span class="st">&quot;qgraph&quot;</span>,</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="st">&quot;officer&quot;</span>,<span class="st">&quot;flextable&quot;</span>,<span class="st">&quot;openxlsx&quot;</span>))</span></code></pre></div>
+<p>UVA uses weighted topological overlap (wTO threshold .25; Christensen
+et al., 2023). With the default <code>uva=NULL</code>, UVA is
+<strong>not executed</strong>: no wTO, redundancy table, removal
+proposal or UVA figure is generated. Reports explicitly identify the
+omitted stage; omission does not mean no redundancies were detected. Use
+<code>uva=&quot;diagnostic&quot;</code> to compute candidate pairs, their wTO and
+justified native removal proposals while keeping every item. Use
+<code>uva=&quot;removed&quot;</code> to authorize automatic representative
+selection and removal, with documented reasons. No mode asks interactive
+questions; behavior is identical in consoles, scripts and knitr. The
+former <code>&quot;ask&quot;</code> and <code>&quot;reduce&quot;</code> options are no
+longer valid. Review semantic coverage before authorizing removal;
+statistical redundancy alone does not demonstrate wording effects. The
+redundant-pairs table shows only finite wTO values at or above the
+declared cutoff; the full native pairwise table remains in
+<code>fit$results$uva$wto$pairwise</code>.</p>
+<p>Default console and Word/Excel reports emphasize detected
+communities, bootstrap structural consistency and separate comparisons
+of network structure, global strength and item loadings. The compact
+item table shows only loading differences with BH-adjusted p &lt; .05.
+Non-significance does not establish equivalence; unavailable tests or
+unsupported configural structure remain explicit. Full technical tables,
+conditions and bibliographies remain in the result object. Use
+<code>print(fit, detail=&quot;audit&quot;)</code> or
+<code>psychomatic_report(fit, detail=&quot;audit&quot;)</code> to inspect them.
+The shared APA formatter uses partial italics for journal names, volumes
+and book titles in package bibliographies. Word and Excel preserve rich
+text; compatible interactive consoles use ANSI italics and redirected
+logs stay plain. Use <code>options(PsychoMatic.ansi=FALSE)</code> to
+disable or <code>TRUE</code> to force terminal styling. EGAnet retains
+the member of a pair with the lowest maximum wTO to other items outside
+that pair. For larger sets it retains the member with the highest mean
+wTO within the redundant set, including the zero diagonal in the native
+mean. An exact tie is resolved by the native candidate order, not a
+quality judgment. The console/Word/Excel reports identify proposed and
+actual removals, their retained representatives, scores, rules and ties.
+When UVA is requested, <code>fit$results$uva</code> preserves the native
+<strong>proposal</strong>, including its candidate
+<code>reduced_data</code>; the <strong>applied</strong> decision is in
+<code>fit$results$uva_selection</code> and
+<code>fit$results$retained_items</code>/<code>removed_items</code>.
+Requested and effective UVA modes are recorded separately. The original
+responses are preserved in diagnostics. Groups always share the same
+analysis item set. Bootstrap inference holds this set fixed; when UVA
+removes representatives it does not incorporate selection
+uncertainty.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Skip UVA (default)</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">network_auto</span>(my_data, <span class="at">uva=</span><span class="cn">NULL</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co"># Describe redundancy, preserve all items</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>diagnostic <span class="ot">&lt;-</span> <span class="fu">network_auto</span>(my_data, <span class="at">uva=</span><span class="st">&quot;diagnostic&quot;</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co"># Authorize justified representative removal</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>reduced <span class="ot">&lt;-</span> <span class="fu">network_auto</span>(my_data, <span class="at">uva=</span><span class="st">&quot;removed&quot;</span>)</span></code></pre></div>
+<p>riEGA uses original <strong>unrecoded</strong> numeric responses.
+Empirical RI convergence and admissibility are explicitly checked; an
+unsuccessful RI fit makes the stage not evaluable. Only declared reverse
+keys and theoretical ranges recode the main analysis. Negative
+correlations are diagnostics, not semantic evidence that an item is
+inverse. RI convergence does not alone establish wording effects (Bulut
+et al., 2025; Faraci &amp; Nasonte, 2026). An admissible RI fit can
+leave an empty residual network or unassigned items. In that case its
+partition TEFI and structural bootstrap are explicitly
+<code>not_evaluable</code>, rather than a programming failure. The
+original EGA, main bootstrap and group comparisons continue. The
+diagnostic plot explains the unavailable partition; this outcome does
+not prove wording effects. Raw and RI partitions are also evaluated on
+the same original correlation matrix. Native residual TEFI is separately
+labeled and never ranked against raw TEFI.</p>
+<p>Revised network loadings preserve signs and cross-loadings.
+Approximate magnitude guidelines are .20 (small), .35 (moderate), .50
+(large), following Christensen et al. (2025). These guidelines do not
+justify automatic item deletion. Network figures show only item
+identifiers in <strong>nodes</strong>; numeric <strong>edge</strong>
+labels are regularized partial correlations
+(<code>type=&quot;network&quot;</code>). <code>type=&quot;loadings&quot;</code> displays
+primary revised loadings on <strong>item-to-dimension edges</strong>,
+with square dimension nodes; this is a descriptive loading diagram, not
+a CFA model or an item network. <code>type=&quot;loadings_matrix&quot;</code>
+retains the complete signed loading/cross-loading map.</p>
+<p><code>hierEGA()</code> explores higher-order structure. When EGA
+identifies at least three dimensions with at least three indicators
+each, the workflow fits correlated, second-order and orthogonal bifactor
+CFA candidates using <code>lavaan</code>. Internal names protect model
+syntax from arbitrary item labels. Any ordinal indicators, including
+mixed ordinal/continuous data, use WLSMV with the ordinal subset;
+otherwise MLR is used on the same complete-case sample. Recommendations
+require convergence, admissibility, CFI &gt;=.95, RMSEA &lt;=.06 and
+SRMR &lt;=.08. Among comparable likelihood fits, BIC must improve by at
+least 10 to prefer a more complex model over an acceptable correlated
+candidate. WLSMV comparisons use fit/admissibility and a declared
+preference for simpler acceptable candidates; AIC/BIC are not used.
+These are conservative operational heuristics, not proof of a true
+model. When bootstrap is enabled, riEGA refits the random intercept in
+each resample, and hierEGA refits both orders. Candidate recommendations
+additionally require &gt;=.70 structural consistency in relevant orders;
+otherwise they are indeterminate. An indeterminate recommendation is
+legitimate. genTEFI has its own comparison set. Same-sample CFA is
+exploratory; external validation remains necessary. Reports separately
+show network communities and TEFI by order, native hierarchical
+assignments and the native exploratory interpretation, followed by
+<strong>Supplementary CFA candidates</strong>. CFA factors use the
+initial pooled EGA partition, rather than the native hierEGA lower-order
+partition, which may identify different communities. Both partitions are
+reported and their distinct sources must be retained. Negative variances
+are inadmissible Heywood cases, regardless of CFI. A second-order model
+with exactly three first-order factors has a just-identified
+higher-order component (<code>higher_order_df=0</code>); identical fit
+indices do not distinguish it from the correlated model. This does not
+mean that the full item-level CFA has zero degrees of freedom.</p>
+<p>bootEGA provides item stability, dimensionality frequencies and exact
+composition structural consistency (Christensen &amp; Golino, 2021).
+bootnet provides nonparametric edge intervals and case-drop centrality
+stability (Epskamp et al., 2018). Strength sums absolute edge weights.
+Betweenness and closeness use inverse absolute edge weights as
+distances, with unnormalized native centrality scaling. Closeness is
+reported as undefined for disconnected networks; its comparison p and CS
+are also not evaluable when the empirical graph is disconnected.
+Expected influence retains signs. Centrality is descriptive, not causal
+or an intervention recommendation. CS below .25 is inadequate; at least
+.50 is preferable. Small replication counts are diagnostic only.</p>
+<p>NCT compares structure, global strength, edges and centrality (van
+Borkulo et al., 2023). A shared raw-row estimator recomputes
+correlations in each permutation. Every observed group participates in
+all pairwise comparisons. Missing group labels and group sample sizes
+are reported. Configural support requires equal empirical co-membership
+and &gt;=.70 bootstrap stability for every retained item in every group,
+assessed against the pooled structure. No unstable items are silently
+removed. EGAnet loading tests are explicitly exploratory when configural
+support is absent (Jamison et al., 2024).</p>
+<p>The four BH families include all requested group pairs: both global
+tests, all edge tests, all node/centrality tests, and all primary
+loading tests. <code>p_raw</code> and <code>p_BH</code> remain separate.
+Loading p values are recalculated from <strong>all</strong> unrounded
+native permutations with the plus-one Monte Carlo correction, avoiding
+rounding and first-draw omission in the public EGAnet 2.4.1 table. The
+minimum p resolution is <code>1/(n_perm+1)</code>. A nonsignificant
+result does not establish equivalence, and NCT does not establish latent
+scalar invariance (Benjamini &amp; Hochberg, 1995). For this
+fixed-partition loading test, repeated community discovery contributes
+neither to the estimated network nor to the loadings. Native EGAnet
+permutations therefore use Walktrap and the LE membership check to avoid
+unused consensus Louvain iterations. Correlation estimation, GLASSO,
+permutation seeds and revised loadings under the original partition are
+preserved. These internal membership results are not used as empirical
+group structures; the reported group networks and configural bootstrap
+still use the requested consensus Louvain.</p>
+<p>All plotting and report exports use cached results, without rerunning
+analyses. Numerical Excel cells retain full precision. Word and Excel
+include figures and APA 7 reference strings; participant rows are
+excluded. Existing files require explicit <code>overwrite=TRUE</code>.
+Default counts are 1000 per bootstrap stage and 5000 permutation draws;
+runtime increases with items, groups and consensus iterations.
+<code>verbose=TRUE</code> prints stage/substage starts, completion and
+elapsed seconds. <code>n_cores</code> controls bootEGA, bootnet and
+loading permutations; NCT remains sequential in the supported version.
+The hierarchical bootstrap respects <code>consensus_iter</code> at both
+orders. A user interruption in an optional stage is recorded as
+<code>interrupted</code>, later stages are skipped and completed earlier
+results are returned as a partial workflow. An incomplete invariance
+stage supplies no invariance conclusions or partially computed
+permutation p values.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Diagnostic run, not publication-level precision:</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>quick <span class="ot">&lt;-</span> PsychoMatic<span class="sc">::</span><span class="fu">network_auto</span>(my_data, <span class="at">items=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="at">group=</span><span class="st">&quot;sex&quot;</span>, <span class="at">n_boot=</span><span class="dv">20</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">n_perm=</span><span class="dv">19</span>, <span class="at">consensus_iter=</span><span class="dv">10</span>, <span class="at">seed=</span><span class="dv">2026</span>, <span class="at">verbose=</span><span class="cn">TRUE</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>quick<span class="sc">$</span>results<span class="sc">$</span>stages</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>quick<span class="sc">$</span>errors</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>quick<span class="sc">$</span>decision_log</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>quick<span class="sc">$</span>results<span class="sc">$</span>invariance<span class="sc">$</span>families</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co"># Review optional failed stages before interpreting a partial workflow.</span></span></code></pre></div>
+<p>Missingness is handled explicitly via complete cases (default) or
+pairwise correlations. Assess missing-data assumptions; pairwise
+matrices may be non-positive-definite. No minimum sample rule guarantees
+adequate precision.</p>
+<p>References used by a fitted result are stored in
+<code>fit$references</code> (APA 7), and appear in both report
+languages. Methodological sources include the user’s EGA, UVA, entropy,
+wording, bifactor, loading and invariance papers, plus bootstrap,
+community detection and NCT papers. Full implementation evidence and
+current verification limits are recorded locally in
+<code>docs/psychometric-network-implementation.md</code>.</p>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -341,29 +341,68 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<div id="alignment-invariance-workflow" class="section level1">
-<h1>Alignment Invariance Workflow</h1>
-<p>Alignment optimization can be run from item-level data or from
-loading and intercept matrices. Matrix input is useful for compact
-reproducible examples.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(PsychoMatic)</span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">c</span>(<span class="fl">0.70</span>, <span class="fl">0.80</span>, <span class="fl">0.75</span>,</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="fl">0.72</span>, <span class="fl">0.78</span>, <span class="fl">0.74</span>),</span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">2</span>,</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>)</span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>nu <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="fu">c</span>(<span class="fl">0.00</span>, <span class="fl">0.00</span>, <span class="fl">0.00</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    <span class="fl">0.10</span>, <span class="fl">0.05</span>, <span class="fl">0.08</span>),</span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">2</span>,</span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>)</span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>alignment <span class="ot">&lt;-</span> <span class="fu">inv_align_auto</span>(<span class="at">lambda =</span> lambda, <span class="at">nu =</span> nu, <span class="at">language =</span> <span class="st">&quot;eng&quot;</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">summary</span>(alignment)</span></code></pre></div>
-<p>When item-level data are available, use <code>data</code> and
-<code>group</code> instead of <code>lambda</code> and
-<code>nu</code>.</p>
+<div id="what-alignment-adds" class="section level1">
+<h1>What alignment adds</h1>
+<p>Alignment optimization estimates approximate parameter comparability
+without imposing exact equality on every loading and intercept. It is
+often most useful with many groups, where long exact-invariance
+sequences become impractical. It does not prove invariance or
+automatically justify latent-mean comparisons.</p>
+<p><code>inv_align_auto()</code> accepts item-level data or
+group-by-item loading and intercept matrices. Matrix inputs must contain
+parameters from compatible configural measurement models; observed item
+means are not substitutes for factor intercepts.</p>
+</div>
+<div id="compact-matrix-workflow" class="section level1">
+<h1>Compact matrix workflow</h1>
+<p>The matrices below are illustrative configural-model parameters with
+explicit group and item identities.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>groups <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>items <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;i&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">A =</span> <span class="fu">c</span>(<span class="fl">0.78</span>, <span class="fl">0.73</span>, <span class="fl">0.76</span>, <span class="fl">0.72</span>, <span class="fl">0.80</span>, <span class="fl">0.69</span>, <span class="fl">0.77</span>, <span class="fl">0.74</span>, <span class="fl">0.71</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">B =</span> <span class="fu">c</span>(<span class="fl">0.76</span>, <span class="fl">0.75</span>, <span class="fl">0.72</span>, <span class="fl">0.74</span>, <span class="fl">0.78</span>, <span class="fl">0.71</span>, <span class="fl">0.75</span>, <span class="fl">0.76</span>, <span class="fl">0.70</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>nu <span class="ot">&lt;-</span> <span class="fu">rbind</span>(</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  <span class="at">A =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">length</span>(items)),</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="at">B =</span> <span class="fu">c</span>(<span class="fl">0.03</span>, <span class="sc">-</span><span class="fl">0.02</span>, <span class="fl">0.45</span>, <span class="fl">0.01</span>, <span class="sc">-</span><span class="fl">0.03</span>, <span class="fl">0.02</span>, <span class="fl">0.00</span>, <span class="fl">0.02</span>, <span class="sc">-</span><span class="fl">0.01</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>)</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="fu">dimnames</span>(lambda) <span class="ot">&lt;-</span> <span class="fu">dimnames</span>(nu) <span class="ot">&lt;-</span> <span class="fu">list</span>(groups, items)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">requireNamespace</span>(<span class="st">&quot;sirt&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  alignment <span class="ot">&lt;-</span> PsychoMatic<span class="sc">::</span><span class="fu">inv_align_auto</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="at">lambda =</span> lambda,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="at">nu =</span> nu,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    <span class="at">fixed =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    <span class="at">meth =</span> <span class="dv">2</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    <span class="at">language =</span> <span class="st">&quot;eng&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  )</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  <span class="fu">summary</span>(alignment)</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>}</span></code></pre></div>
+<p>The alignment chunk is not evaluated during vignette construction
+because the optional optimization engine can be slow on constrained
+workers. The installed example executes the same bounded workflow.</p>
+</div>
+<div id="interpretation-and-diagnostics" class="section level1">
+<h1>Interpretation and diagnostics</h1>
+<p>Named matrices and weights are matched by group/item identity.
+Missing, ambiguous, or duplicate identities are rejected rather than
+paired by accident. Engine errors, nonconvergence, malformed dimensions,
+and non-finite objectives produce a structured
+<code>not_evaluable</code> result without favorable prose.</p>
+<p>Alignment R-squared and the percentage of non-invariant parameters
+are approximate diagnostics that depend on tuning, tolerance, model
+quality, and the number/diversity of groups. A cutoff is a heuristic
+rather than a formal test. Inspect item/group flags, the objective and
+convergence evidence, requested/effective settings, missingness
+diagnostics, and sensitivity to reasonable tuning values. With only two
+groups, conventional complete or researcher-directed partial invariance
+will often be easier to interpret.</p>
+<p>Use <code>factorial_invariance_auto()</code> for a complete
+exact-invariance sequence and <code>invariance_partial()</code> for
+explicitly justified releases with anchors.
+<code>psychomatic_report()</code> can then export the structured
+evidence from whichever workflow matches the research question.</p>
 </div>
 
 

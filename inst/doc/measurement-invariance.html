@@ -12,7 +12,7 @@
 
 
 
-<title>Measurement Invariance Workflow</title>
+<title>Complete and Partial Measurement Invariance</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -337,51 +337,166 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Measurement Invariance Workflow</h1>
+<h1 class="title toc-ignore">Complete and Partial Measurement
+Invariance</h1>
 
 
 
-<div id="measurement-invariance-workflow" class="section level1">
-<h1>Measurement Invariance Workflow</h1>
-<p>This vignette shows how to prepare a small multigroup dataset for
-measurement invariance analysis.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(PsychoMatic)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">data</span>(psychomatic_multigroup)</span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">table</span>(psychomatic_multigroup<span class="sc">$</span>group)</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt;  A  B </span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; 70 70</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">head</span>(psychomatic_multigroup)</span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt;          mg1         mg2        mg3        mg4        mg5         mg6 group</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; 1 -0.4463447 -0.01640293  0.1831621 -0.2703497 -0.4175806  0.91629766     A</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; 2  0.5010886  0.15321729 -1.4712071  0.1754183  0.6088400  0.20421379     A</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; 3 -0.7826698 -0.70986766 -1.8686623 -0.3995529 -0.5384254 -0.12112080     A</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; 4  2.1959812  1.35356597  3.0867854  2.1035482  1.6856730  1.68979830     A</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; 5  1.1758965  0.14786369  1.8625270  0.2716819  0.6699287  0.03527708     A</span></span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; 6  0.9166738  0.26417150  0.8650117  0.2800986  0.7013515 -0.30536607     A</span></span></code></pre></div>
-<div id="model" class="section level2">
-<h2>Model</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="st">factor1 =~ mg1 + mg2 + mg3</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="st">factor2 =~ mg4 + mg5 + mg6</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="st">&quot;</span></span></code></pre></div>
+<div id="complete-invariance" class="section level1">
+<h1>Complete invariance</h1>
+<p>The locally simulated multigroup data are continuous and
+unifactorial.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>grouped_items <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">simulateData</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="st">&quot;general =~ 0.7*mg1 + 0.7*mg2 + 0.7*mg3 + 0.7*mg4 + 0.7*mg5 + 0.7*mg6&quot;</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="at">sample.nobs =</span> <span class="dv">400</span>, <span class="at">seed =</span> <span class="dv">2402</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>grouped_items<span class="sc">$</span>group <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>), <span class="at">each =</span> <span class="dv">200</span>))</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">table</span>(grouped_items<span class="sc">$</span>group)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt;   A   B </span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; 200 200</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>continuous_model <span class="ot">&lt;-</span> <span class="st">&quot;general =~ mg1 + mg2 + mg3 + mg4 + mg5 + mg6&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>complete <span class="ot">&lt;-</span> PsychoMatic<span class="sc">::</span><span class="fu">factorial_invariance_auto</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  grouped_items,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">group =</span> <span class="st">&quot;group&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">model =</span> continuous_model,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">estimator =</span> <span class="st">&quot;ML&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">missing =</span> <span class="st">&quot;auto&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">language =</span> <span class="st">&quot;eng&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="fu">summary</span>(complete)<span class="sc">$</span>fit</span></code></pre></div>
+<p>The complete sequence is not evaluated during vignette construction
+because it fits four multigroup models. The installed example executes
+it. One frozen analytic sample is used across configural, metric,
+scalar, and strict stages. WLSMV/ULSMV default to ordered responses,
+with lavaan’s native marker identification and delta parameterization.
+ML/MLR/ULS analyze numeric scores. No separate threshold-equality stage
+is fitted in this four-stage workflow; use
+<code>ordinal_invariance_auto()</code> for identified threshold/loading
+comparisons. Native ordinal scalar/strict restrictions may not yield
+independent tests. <code>fit_variant = &quot;scaled&quot;</code> is the default;
+<code>&quot;robust&quot;</code> selects robust CFI/RMSEA for fit, changes,
+decisions and reports. Chi-square remains scaled for corrected
+estimators and SRMR remains base; unavailable requested robust indices
+are missing. Requested/effective estimator, missing-data handling,
+identification, convergence, admissibility, and comparability are
+retained.</p>
+<p>Changes in CFI, RMSEA, and SRMR use Chen-style descriptive
+heuristics. They are not hypothesis tests and do not prove measurement
+invariance. The operational minimum group size is a safety floor, not a
+power guarantee.</p>
 </div>
-<div id="sequential-invariance-testing" class="section level2">
-<h2>Sequential Invariance Testing</h2>
-<p>The full workflow fits configural, metric, scalar, and strict models.
-It is not evaluated by default in CRAN vignette checks because
-multi-group CFA can be computationally heavier than a minimal
-example.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>invariance <span class="ot">&lt;-</span> <span class="fu">factorial_invariance_auto</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  psychomatic_multigroup,</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">group =</span> <span class="st">&quot;group&quot;</span>,</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">model =</span> model,</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">estimator =</span> <span class="st">&quot;ML&quot;</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">language =</span> <span class="st">&quot;eng&quot;</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">report =</span> <span class="cn">FALSE</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>)</span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="fu">summary</span>(invariance)</span></code></pre></div>
+<div id="ordered-indicators-and-identification" class="section level1">
+<h1>Ordered indicators and identification</h1>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2402</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>latent <span class="ot">&lt;-</span> <span class="fu">matrix</span>(stats<span class="sc">::</span><span class="fu">rnorm</span>(<span class="dv">600</span> <span class="sc">*</span> <span class="dv">3</span>), <span class="at">ncol =</span> <span class="dv">3</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>group <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>), <span class="at">each =</span> <span class="dv">300</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>ordinal_groups <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">sapply</span>(<span class="fu">seq_len</span>(<span class="dv">9</span>), <span class="cf">function</span>(j) {</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  response <span class="ot">&lt;-</span> <span class="fl">0.8</span> <span class="sc">*</span> latent[, <span class="fu">ceiling</span>(j <span class="sc">/</span> <span class="dv">3</span>)] <span class="sc">+</span> stats<span class="sc">::</span><span class="fu">rnorm</span>(<span class="dv">600</span>, <span class="at">sd =</span> <span class="fl">0.6</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  values <span class="ot">&lt;-</span> <span class="fu">integer</span>(<span class="dv">600</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="cf">for</span> (g <span class="cf">in</span> <span class="fu">levels</span>(group)) {</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    thresholds <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="cn">Inf</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="sc">-</span><span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="dv">1</span>, <span class="cn">Inf</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>    <span class="cf">if</span> (j <span class="sc">==</span> <span class="dv">3</span> <span class="sc">&amp;&amp;</span> g <span class="sc">==</span> <span class="st">&quot;B&quot;</span>) thresholds[<span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="fl">0.8</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>    values[group <span class="sc">==</span> g] <span class="ot">&lt;-</span> <span class="fu">cut</span>(response[group <span class="sc">==</span> g], thresholds, <span class="at">labels =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  }</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  values</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>}))</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="fu">names</span>(ordinal_groups) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;i&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>ordinal_groups[] <span class="ot">&lt;-</span> <span class="fu">lapply</span>(ordinal_groups, ordered, <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>ordinal_groups<span class="sc">$</span>group <span class="ot">&lt;-</span> group</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>ordinal_model <span class="ot">&lt;-</span> <span class="fu">paste</span>(</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  <span class="st">&quot;factor1 =~ i1 + i2 + i3&quot;</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>  <span class="st">&quot;factor2 =~ i4 + i5 + i6&quot;</span>,</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>  <span class="st">&quot;factor3 =~ i7 + i8 + i9&quot;</span>,</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>  <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>)</span></code></pre></div>
+<p><code>ordinal_groups</code> contains ordered five-category indicators
+and a generated group-B difference in the third threshold of
+<code>i3</code>. For ordinal analyses, the output distinguishes
+requested WLSMV from lavaan’s effective estimator, records theta
+parameterization and identification metadata, and uses stage families
+appropriate to thresholds and loadings. Binary items cannot be forced
+through separate stages that are not jointly identified.</p>
 </div>
+<div id="three-stage-ordinal-invariance" class="section level1">
+<h1>Three-stage ordinal invariance</h1>
+<p>The three-stage ordinal workflow is available separately:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>ordinal_complete <span class="ot">&lt;-</span> PsychoMatic<span class="sc">::</span><span class="fu">ordinal_invariance_auto</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  ordinal_groups, <span class="at">group =</span> <span class="st">&quot;group&quot;</span>, <span class="at">model =</span> ordinal_model,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">estimator =</span> <span class="st">&quot;WLSMV&quot;</span>, <span class="at">language =</span> <span class="st">&quot;eng&quot;</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">summary</span>(ordinal_complete)<span class="sc">$</span>fit</span></code></pre></div>
+<p>It tests configural, equal thresholds, and equal thresholds and
+loadings, with Wu and Estabrook (2016) identification as illustrated by
+Svetina et al. (2020). Only WLSMV and ULSMV are accepted
+(<code>auto</code> selects WLSMV). Chen (2007) change cutoffs are
+descriptive extrapolations to ordinal estimation. Changes are signed
+current-minus-previous differences. A separate threshold test with no
+additional degrees of freedom is not evidence for invariance.</p>
+</div>
+<div id="researcher-directed-partial-invariance" class="section level1">
+<h1>Researcher-directed partial invariance</h1>
+<p>Use <code>invariance_partial()</code> only when the release has an a
+priori or otherwise defensible substantive rationale. It does not
+inspect modification indices to free parameters automatically.</p>
+<p>By default, partial invariance uses
+<code>workflow = &quot;factorial&quot;</code>, matching the native lavaan calls,
+preparation and fit variants in
+<code>factorial_invariance_auto()</code>. Targets are metric, scalar and
+strict. WLSMV/ULSMV default to ordered indicators.
+<code>fit_variant = &quot;scaled&quot;</code> is the default; explicit
+<code>&quot;robust&quot;</code> controls CFI/RMSEA, changes and decisions without
+substitution if unavailable. Lower-stage releases propagate to the
+matched prerequisite. The following threshold example uses
+<code>workflow = &quot;ordinal&quot;</code> explicitly for the identified semTools
+procedure.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">requireNamespace</span>(<span class="st">&quot;semTools&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  partial <span class="ot">&lt;-</span> PsychoMatic<span class="sc">::</span><span class="fu">invariance_partial</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    ordinal_groups,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">group =</span> <span class="st">&quot;group&quot;</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    <span class="at">model =</span> ordinal_model,</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>    <span class="at">free =</span> <span class="st">&quot;i3 | t3&quot;</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>    <span class="at">rationale =</span> <span class="st">&quot;The simulation preregisters a group-B shift in this threshold.&quot;</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>    <span class="at">stage =</span> <span class="st">&quot;thresholds&quot;</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>    <span class="at">workflow =</span> <span class="st">&quot;ordinal&quot;</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>    <span class="at">measurement =</span> <span class="st">&quot;ordinal&quot;</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>    <span class="at">estimator =</span> <span class="st">&quot;WLSMV&quot;</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="at">ordered =</span> <span class="fu">paste0</span>(<span class="st">&quot;i&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>),</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    <span class="at">min_anchor_items =</span> <span class="dv">2</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>    <span class="at">language =</span> <span class="st">&quot;eng&quot;</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>  )</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>  <span class="fu">summary</span>(partial)<span class="sc">$</span>releases</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>  <span class="fu">summary</span>(partial)<span class="sc">$</span>comparisons</span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>}</span></code></pre></div>
+<p>The partial example is not evaluated during vignette construction
+because it fits multiple ordinal multigroup models and uses an optional
+package. The function validates release grammar and equality families,
+requires rationale, verifies that releases actually took effect,
+preserves at least the requested number of anchor items, checks nesting
+and a common fit-index variant, and fails closed when a prerequisite or
+target model is not evaluable.</p>
+<p>The full-to-partial same-stage comparison is descriptive. A result
+labelled <code>partial_invariance_supported</code> still requires
+substantive review and should not be reported as proof. Missing cases,
+sparse categories, nonconvergence, fixed reference parameters, or
+insufficient degrees of freedom can all make the comparison
+<code>not_evaluable</code>.</p>
+</div>
+<div id="which-workflow-comes-next" class="section level1">
+<h1>Which workflow comes next?</h1>
+<ul>
+<li>Use complete invariance when exact equality constraints are
+plausible and the number of groups is manageable.</li>
+<li>Use researcher-directed partial invariance for specific, justified
+releases while retaining defensible anchors.</li>
+<li>Consider <code>inv_align_auto()</code> for an approximate alignment
+question, particularly with many groups; alignment is not an automatic
+repair for a failed exact-invariance sequence.</li>
+</ul>
+<p>All three workflows preserve raw values at full precision. Display
+rounding and Chen thresholds are decision aids, not replacements for
+reporting model syntax, sample handling, estimator, identification,
+released parameters, and reasons.</p>
 </div>
 
 
