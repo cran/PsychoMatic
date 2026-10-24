@@ -1,7 +1,7 @@
-b67e3b5a7d6ee69094bf0496ee5b829e *DESCRIPTION
+c6b60caee81e3aabd73bb2bcb7781cb6 *DESCRIPTION
 cf8fd8537c815834db63fe8c0d134497 *LICENSE.note
 86b567effec3e5a8d8abfea6bb5f4f65 *NAMESPACE
-e5ebb505c1d8451861bb9bbb0d1bbbb2 *NEWS.md
+05da1eb7bfccd2826bec39680a9ed50f *NEWS.md
 19a416c50f5c163d1f2744242ae321fb *R/CFA_AUTO.R
 75331d9d85274c7f61301317265e9a55 *R/CORMAT.R
 50abb36851923088051dce73e0771583 *R/DESC_AUTO.R
@@ -46,7 +46,7 @@ bdc48aac3f24f3ff616be508e7007c1e *R/reliability_items.R
 bbb65042bd9e95ca6f5f620be76754dc *R/report_tools.R
 05bf2ba5fff8f0e14a9da1a51321ce84 *R/spec_tools.R
 03bddd30772b6e45a8a2e6bce8d638a3 *R/tidy_summaries.R
-e08fe998d5493a8e4195b7293f4a2ad1 *README.md
+c5d5382f1a10023a3134220f0e01c310 *README.md
 6af8e7644a2c366a25339b1923c9a048 *build/partial.rdb
 56f66775f623ebd33be5242dd103be8e *build/vignette.rds
 81e76601dd62c3c33806ff735d7115f9 *inst/doc/alignment-invariance.R
@@ -140,6 +140,7 @@ ce118526ae42d2ce660a9575acbbe459 *tests/testthat.R
 68b8063e371bcd89905ef02581b9e6f9 *tests/testthat/helper-data-fixtures.R
 b4bb6f857761afd152b627d9333176ed *tests/testthat/helper-esem-data.R
 c51a2b4b34b0de75322fdedd0d99811c *tests/testthat/helper-ordinal-identification.R
+097a50fab00078e9795705aa043cbeb4 *tests/testthat/helper-report-paths.R
 12f6b17470a393e7f3d398665b0e5337 *tests/testthat/helper-simulated-data.R
 4e2800bc77eb6562631a96313e89ccd5 *tests/testthat/helper-test-tiers.R
 13ab3173de2c811cb44bbd369912b3f1 *tests/testthat/test-alignment-regressions.R
@@ -164,7 +165,7 @@ ea727faf311917f88e8629cfd68885a4 *tests/testthat/test-esem-review.R
 d75b8719436c0fb56974aa44df5b32fa *tests/testthat/test-invariance-complete.R
 8db0e4b059ae452a1edb17c5eea0495d *tests/testthat/test-invariance-native-variants.R
 797eef39c7e6d737f210481b123c09e3 *tests/testthat/test-invariance-partial-native.R
-f9feca50f4784ce9e8a44867b39ff742 *tests/testthat/test-invariance-partial.R
+c4b83a1b2495ff06856cb46a572e4d48 *tests/testthat/test-invariance-partial.R
 f54ccfe7f5a373b0983d2b600d0de539 *tests/testthat/test-invariance-response-presentation.R
 8ddd4fee6073a1dc9f86e86f4a999d77 *tests/testthat/test-invariance-workflow-split.R
 702e04f34e31edfed634e09691b15de9 *tests/testthat/test-minimal-presentation.R
@@ -183,11 +184,12 @@ e661ecdec23c28b419f44e077eec8535 *tests/testthat/test-ordinal-invariance.R
 1524d440749c7808bcd92e37596b656f *tests/testthat/test-psychomatic-core.R
 84869650d7cda1026e07e33ae705b954 *tests/testthat/test-reader-corrections.R
 6a01f3fc30d4ec1058e623ca82dbdc25 *tests/testthat/test-reliability-cfa.R
-55b637b653f53acfc0d3b9068a02b8d5 *tests/testthat/test-report-default-directory.R
-6b2a57a7dbee9bade4d1c362975db919 *tests/testthat/test-reporting-audit.R
-ba2bfa3ca03e723cf48a5fb3d3936814 *tests/testthat/test-reporting-regressions.R
+0c94e46d3d2447ed1c2b57a0d26043c5 *tests/testthat/test-report-default-directory.R
+8f2be9612b8ebdacf4b210f39c56c815 *tests/testthat/test-report-path-identity.R
+508d21b4a85285f53370d6d43277f0cd *tests/testthat/test-reporting-audit.R
+67de73be9aaab53d2ed2167e9e859dbc *tests/testthat/test-reporting-regressions.R
 29b734416a814efa33d84e1cd74b1e5a *tests/testthat/test-requested-defaults.R
-81d54dc9aaecf7a1c866e6592b6c6206 *tests/testthat/test-scoring-correlations.R
+e0fccee47dfc1b69199d2fdcefa5978f *tests/testthat/test-scoring-correlations.R
 49f61c1bc7cf46e7f6dd27ac487a39ef *tests/testthat/test-workflow-tools.R
 5e79a91c2d6c50291f4958a37af1a758 *vignettes/alignment-invariance.Rmd
 b5968b73cec247f66686556e6eda7de2 *vignettes/cfa-workflow.Rmd
