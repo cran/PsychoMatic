@@ -14,11 +14,11 @@ test_that("automatic comparison treats five-category items as ordinal", {
   expect_null(explicit$ordered)
   scaled <- compare_models_auto(d, models, estimator="WLSMV", verbose=FALSE)
   direct <- lavaan::cfa(models[[1]], d, estimator="WLSMV", ordered=names(d))
-  expect_equal(scaled$fit$comparison_cfi[1], unname(lavaan::fitMeasures(direct, "cfi.scaled")))
-  expect_equal(scaled$fit$comparison_rmsea[1], unname(lavaan::fitMeasures(direct, "rmsea.scaled")))
+  expect_equal(scaled$fit$comparison_cfi[1], unname(lavaan::fitMeasures(direct, "cfi.scaled")), tolerance = 1e-7)
+  expect_equal(scaled$fit$comparison_rmsea[1], unname(lavaan::fitMeasures(direct, "rmsea.scaled")), tolerance = 1e-7)
   reader <- .pm_analysis_sections(scaled, "eng")$sections
   expect_true("Data and method" %in% names(reader))
-  expect_equal(reader$Fit[["CFI (scaled)"]][1], unname(lavaan::fitMeasures(direct, "cfi.scaled")))
+  expect_equal(reader$Fit[["CFI (scaled)"]][1], unname(lavaan::fitMeasures(direct, "cfi.scaled")), tolerance = 1e-7)
   expect_true(all(is.na(scaled$fit$aic)))
   expect_true(all(is.na(scaled$fit$bic)))
   # A numeric ID outside the models must not alter category detection.
@@ -39,7 +39,7 @@ test_that("continuous comparison retains the CFA automatic selection policy", {
   expect_identical(x$effective_settings$estimator_selection, "automatic")
   manual <- compare_models_auto(d, models, estimator="MLR", verbose=FALSE)
   expect_identical(manual$effective_settings$estimator_selection, "user")
-  expect_equal(manual$fit$comparison_tli, manual$fit$tli_scaled)
+  expect_equal(manual$fit$comparison_tli, manual$fit$tli_scaled, tolerance = 1e-8)
 })
 
 test_that("missing scaled indices do not silently fall back to base or robust", {
@@ -58,9 +58,9 @@ test_that("requested index variant controls both reader and recommendation input
   for (variant in c("scaled", "robust", "base")) {
     x <- compare_models_auto(d, models, estimator="MLR", fit_variant=variant, verbose=FALSE)
     column <- if (variant == "base") "cfi" else paste0("cfi_", variant)
-    expect_equal(x$fit$comparison_cfi, x$fit[[column]])
+    expect_equal(x$fit$comparison_cfi, x$fit[[column]], tolerance = 1e-8)
     reader <- .pm_analysis_sections(x, "eng")$sections$Fit
-    expect_equal(reader[[paste0("CFI (", variant, ")")]], x$fit[[column]])
+    expect_equal(reader[[paste0("CFI (", variant, ")")]], x$fit[[column]], tolerance = 1e-8)
     expect_identical(x$effective_settings$fit_variant, variant)
   }
   expect_error(compare_models_auto(d, models, fit_variant="invalid", verbose=FALSE), "arg")

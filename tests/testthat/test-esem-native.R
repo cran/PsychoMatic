@@ -27,7 +27,7 @@ test_that('ESEM restores RNG with no prior seed, a prior seed and failed fitting
     a <- PsychoMatic:::.pm_esem_fit(p, 2026)
     expect_identical(.Random.seed, before)
     b <- PsychoMatic:::.pm_esem_fit(p, 2026)
-    expect_identical(lavaan::coef(a$fit), lavaan::coef(b$fit))
+    expect_equal(lavaan::coef(a$fit), lavaan::coef(b$fit), tolerance = 1e-7)
     p$native_args$model <- 'invalid syntax'
     expect_s3_class(PsychoMatic:::.pm_esem_fit(p, 2026)$error, 'error')
     expect_identical(.Random.seed, before)

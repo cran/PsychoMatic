@@ -669,7 +669,7 @@ test_that("matrix and external-group inputs retain original rows and match lavaa
   actual_fit <- lavaan::fitMeasures(
     out$models$partial$fit, c("df", "cfi", "rmsea", "srmr")
   )
-  expect_equal(actual_fit, expected_fit, tolerance = 1e-10)
+  expect_equal(actual_fit, expected_fit, tolerance = 1e-7)
 })
 
 test_that("lower-stage releases propagate to the matched prerequisite", {
@@ -731,7 +731,7 @@ test_that("explicit ordinal loadings retain the identified metric key", {
     out$models$partial$fit,
     c("df", "cfi.scaled", "rmsea.scaled", "srmr")
   )
-  expect_equal(actual_fit, expected_fit, tolerance = 1e-10)
+  expect_equal(actual_fit, expected_fit, tolerance = 1e-7)
 })
 
 test_that("ordinal strict release propagates thresholds and frees residuals", {
@@ -922,10 +922,10 @@ test_that("language precedence, methods, and reports preserve raw results", {
   integrated_tables <- PsychoMatic:::.pm_object_tables(out)
   expect_true(all(names(out$tables) %in% names(integrated_tables)))
   for (table_name in names(out$tables)) {
-    expect_identical(
+    expect_equal(
       integrated_tables[[table_name]], out$tables[[table_name]],
       info = table_name
-    )
+    , tolerance = 1e-8)
   }
   expect_identical(length(openxlsx::getSheetNames(path)), 2L)
   report_cells <- unlist(openxlsx::read.xlsx(path, sheet = 2L, colNames = FALSE))

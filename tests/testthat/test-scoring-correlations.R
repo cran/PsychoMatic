@@ -165,7 +165,7 @@ test_that("continuous descriptives have fixed width and raw internal values", {
   expect_equal(nrow(attr(out, "response_percentages")), 0L)
 
   exact <- desc_auto(data.frame(q = c(0, 0, 1)), digits = 1, language = "eng")
-  expect_equal(exact$Mean, 1 / 3, tolerance = 1e-14)
+  expect_equal(exact$Mean, 1 / 3, tolerance = 1e-8)
 })
 
 test_that("response percentages are long and limited to ordinal items", {

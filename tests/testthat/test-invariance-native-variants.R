@@ -25,7 +25,7 @@ test_that("WLSMV defaults reproduce literal native ordered lavaan calls", {
     estimator = "WLSMV", verbose = FALSE)
   expect_identical(numeric_fit$measurement, "ordinal")
   expect_equal(lavaan::fitMeasures(numeric_fit$fitted_models$configural),
-    lavaan::fitMeasures(fit$fitted_models$configural))
+    lavaan::fitMeasures(fit$fitted_models$configural), tolerance = 1e-7)
   continuous <- factorial_invariance_auto(numeric_data, "group", model,
     estimator = "WLSMV", ordered = FALSE, verbose = FALSE)
   expect_identical(continuous$measurement, "continuous")
@@ -41,15 +41,15 @@ test_that("requested fit variants govern tables, deltas and reports", {
     expect_identical(fit$effective_settings$fit_variant, variant)
     for (i in seq_along(fit$fitted_models)) {
       fm <- lavaan::fitMeasures(fit$fitted_models[[i]])
-      expect_equal(fit$fit_table$cfi[i], unname(fm[paste0("cfi.", variant)]))
-      expect_equal(fit$fit_table$rmsea[i], unname(fm[paste0("rmsea.", variant)]))
-      expect_equal(fit$fit_table$chi2[i], unname(fm["chisq.scaled"]))
-      expect_equal(fit$fit_table$srmr[i], unname(fm["srmr"]))
+      expect_equal(fit$fit_table$cfi[i], unname(fm[paste0("cfi.", variant)]), tolerance = 1e-8)
+      expect_equal(fit$fit_table$rmsea[i], unname(fm[paste0("rmsea.", variant)]), tolerance = 1e-8)
+      expect_equal(fit$fit_table$chi2[i], unname(fm["chisq.scaled"]), tolerance = 1e-8)
+      expect_equal(fit$fit_table$srmr[i], unname(fm["srmr"]), tolerance = 1e-8)
     }
     comparable <- which(fit$fit_table$comparable %in% TRUE)
     for (i in comparable) {
-      expect_equal(fit$fit_table$delta_cfi[i], fit$fit_table$cfi[i] - fit$fit_table$cfi[i-1L])
-      expect_equal(fit$fit_table$delta_rmsea[i], fit$fit_table$rmsea[i] - fit$fit_table$rmsea[i-1L])
+      expect_equal(fit$fit_table$delta_cfi[i], fit$fit_table$cfi[i] - fit$fit_table$cfi[i-1L], tolerance = 1e-8)
+      expect_equal(fit$fit_table$delta_rmsea[i], fit$fit_table$rmsea[i] - fit$fit_table$rmsea[i-1L], tolerance = 1e-8)
     }
     for (language in c("eng", "esp")) {
       sections <- .pm_analysis_sections(fit, language)$sections
@@ -71,5 +71,5 @@ test_that("ordinal identification remains distinct and permits robust reporting"
   expect_identical(fit$fit_table$level, c("configural", "thresholds", "thresholds_loadings"))
   expect_identical(fit$fit_records$configural$engine, "semTools::measEq.syntax")
   expect_identical(fit$fit_records$configural$parameterization, "theta")
-  expect_equal(fit$fit_table$cfi[1], unname(lavaan::fitMeasures(fit$fitted_models$configural)["cfi.robust"]))
+  expect_equal(fit$fit_table$cfi[1], unname(lavaan::fitMeasures(fit$fitted_models$configural)["cfi.robust"]), tolerance = 1e-8)
 })

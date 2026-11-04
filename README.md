@@ -1,10 +1,12 @@
 # PsychoMatic
 
-<img src="docs/assets/Package_image.png" alt="PsychoMatic" width="480" />
+<p align="center">
+  <img src="docs/assets/Package_image.png" alt="PsychoMatic" width="480" />
+</p>
 
 **Psychometric analysis and bilingual reports in R.**
 
-PsychoMatic 1.0.1 simplifies descriptives, correlations, factor analysis
+PsychoMatic 1.0.2 simplifies descriptives, correlations, factor analysis
 (EFA, CFA and ESEM), reliability, measurement invariance, IRT/DIF and network
 analysis. Results are available in the console and as Word or Excel reports.
 

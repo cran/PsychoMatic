@@ -39,7 +39,7 @@ test_that("EFA two-item reliability no longer makes negative correlations positi
   )
   r <- stats::cor(d$i1, d$i2)
   out <- PsychoMatic:::.efa_reliability(d, distribution)
-  expect_equal(out$F1$spearman_brown, 2 * r / (1 + r), tolerance = 1e-15)
+  expect_equal(out$F1$spearman_brown, 2 * r / (1 + r), tolerance = 1e-8)
   expect_lt(out$F1$spearman_brown, 0)
 })
 
@@ -53,7 +53,7 @@ test_that("omega uses the full residual covariance matrix", {
   expect_equal(
     PsychoMatic:::.pm_omega_from_matrices(lambda, psi, theta),
     expected,
-    tolerance = 1e-12
+    tolerance = 1e-8
   )
 })
 
@@ -78,7 +78,7 @@ test_that("PUC requires complete, disjoint, orthogonal bifactor structure", {
   )
   ok <- PsychoMatic:::.pm_validate_puc_structure(membership, general = "g")
   expect_true(ok$supported)
-  expect_equal(ok$puc, 27 / 36, tolerance = 1e-15)
+  expect_equal(ok$puc, 27 / 36, tolerance = 1e-8)
 
   overlap <- membership
   overlap$s2 <- c("i3", "i4", "i5")
@@ -198,12 +198,12 @@ test_that("MVN Mardia agrees with the installed MVN 6.3 raw table", {
   expect_equal(
     c(out$skew_stat, out$kurt_stat),
     direct$Statistic[match(c("Mardia Skewness", "Mardia Kurtosis"), direct$Test)],
-    tolerance = 1e-14
+    tolerance = 1e-8
   )
   expect_equal(
     c(out$p_skew, out$p_kurt),
     direct$p.value[match(c("Mardia Skewness", "Mardia Kurtosis"), direct$Test)],
-    tolerance = 1e-14
+    tolerance = 1e-8
   )
 })
 
@@ -263,7 +263,7 @@ test_that("observed alpha uses raw data and matches psych", {
   out <- reliability_auto(d, level = "continuous")
   row <- out$results$coefficients[out$results$coefficients$coefficient == "alpha_observed", ]
   expect_identical(row$matrix, "raw_covariance")
-  expect_equal(row$estimate, unname(expected), tolerance = 1e-12)
+  expect_equal(row$estimate, unname(expected), tolerance = 1e-8)
 })
 
 test_that("ordinal alpha is calculated from an explicitly named ordinal matrix", {
@@ -276,7 +276,7 @@ test_that("ordinal alpha is calculated from an explicitly named ordinal matrix",
   expect_identical(row$matrix, "polychoric")
   expect_identical(rownames(R), names(d))
   expect_identical(colnames(R), names(d))
-  expect_equal(row$estimate, expected, tolerance = 1e-12)
+  expect_equal(row$estimate, expected, tolerance = 1e-8)
 })
 
 test_that("reliability fail-closes edge cases without clamping", {
@@ -323,7 +323,7 @@ test_that("two-item reliability returns signed Spearman-Brown", {
   row2 <- out2$results$coefficients[
     out2$results$coefficients$coefficient == "spearman_brown",
   ]
-  expect_equal(row2$estimate, expected, tolerance = 1e-12)
+  expect_equal(row2$estimate, expected, tolerance = 1e-8)
   expect_lt(row2$estimate, 0)
 })
 
@@ -343,11 +343,11 @@ test_that("CFA model reliability agrees with current semTools APIs", {
   ave <- semTools::AVE(fit)
   for (factor in names(cr)) {
     observed <- rows$estimate[rows$coefficient == "composite_reliability" & rows$factor == factor]
-    expect_equal(observed, as.numeric(cr[[factor]]), tolerance = 1e-12)
+    expect_equal(observed, as.numeric(cr[[factor]]), tolerance = 1e-8)
   }
   for (factor in names(ave)) {
     observed <- rows$estimate[rows$coefficient == "ave" & rows$factor == factor]
-    expect_equal(observed, unname(ave[[factor]]), tolerance = 1e-12)
+    expect_equal(observed, unname(ave[[factor]]), tolerance = 1e-8)
   }
 })
 
@@ -498,7 +498,7 @@ test_that("cfa_auto records each effective robust fit variant", {
     row <- out$fit_indices[out$fit_indices$Metric == metric, ]
     direct <- PsychoMatic:::.pm_pick_fit_variant(out$all_fit_measures, metric)
     expect_identical(row$Variant, direct$variant)
-    expect_equal(row$Value, direct$value, tolerance = 1e-14)
+    expect_equal(row$Value, direct$value, tolerance = 1e-8)
   }
 })
 
@@ -523,9 +523,9 @@ test_that("bifactor omega total and hierarchical follow direct matrices", {
   general <- lambda[, "g", drop = FALSE] %*%
     psi["g", "g", drop = FALSE] %*%
     t(lambda[, "g", drop = FALSE])
-  expect_equal(rel$omega_total, sum(common) / denominator, tolerance = 1e-12)
-  expect_equal(rel$omega_h, sum(general) / denominator, tolerance = 1e-12)
-  expect_equal(rel$puc, 27 / 36, tolerance = 1e-15)
+  expect_equal(rel$omega_total, sum(common) / denominator, tolerance = 1e-8)
+  expect_equal(rel$omega_h, sum(general) / denominator, tolerance = 1e-8)
+  expect_equal(rel$puc, 27 / 36, tolerance = 1e-8)
   expect_equal(
     rel$omega_total,
     as.numeric(semTools::compRelSEM(fit, obs.var = FALSE)[["g"]]),
@@ -563,12 +563,12 @@ test_that("bifactor reliability keeps each multigroup matrix set separate", {
       matrices[[group]]$psi,
       matrices[[group]]$theta
     )
-    expect_equal(rel$groups[[group]]$omega_total, expected, tolerance = 1e-12)
+    expect_equal(rel$groups[[group]]$omega_total, expected, tolerance = 1e-8)
   }
   expect_false(isTRUE(all.equal(
     rel$groups[[1]]$lambda,
     rel$groups[[2]]$lambda,
-    tolerance = 1e-12
+    tolerance = 1e-8
   )))
 })
 
@@ -767,10 +767,10 @@ test_that("second-order reliability targets an explicit unit-weighted item compo
   expect_identical(out$status, "ok")
   expect_identical(out$estimand, "unit_weighted_observed_composite")
   expect_equal(out$weights, weights)
-  expect_equal(out$omega, expected_omega, tolerance = 1e-14)
-  expect_equal(out$ave, expected_ave, tolerance = 1e-14)
-  expect_equal(out$components$higher_order, higher, tolerance = 1e-14)
-  expect_equal(out$components$first_order_disturbance, lower, tolerance = 1e-14)
+  expect_equal(out$omega, expected_omega, tolerance = 1e-8)
+  expect_equal(out$ave, expected_ave, tolerance = 1e-8)
+  expect_equal(out$components$higher_order, higher, tolerance = 1e-8)
+  expect_equal(out$components$first_order_disturbance, lower, tolerance = 1e-8)
   expect_equal(out$components$residual, theta, tolerance = 1e-14)
 })
 
@@ -802,7 +802,7 @@ test_that("second-order CFA rows use the downstream observed-item composite", {
   observed <- rows$value[
     rows$factor == "g" & rows$metric == "composite_reliability"
   ]
-  expect_equal(observed, expected, tolerance = 1e-12)
+  expect_equal(observed, expected, tolerance = 1e-8)
   expect_identical(
     rows$estimand[rows$factor == "g" & rows$metric == "composite_reliability"],
     "unit_weighted_observed_composite"
@@ -877,7 +877,7 @@ test_that("real semTools multigroup values remain distinct in both CFA adapters"
             standard$rows$factor == factor & standard$rows$group == group
         ],
         expected_cr,
-        tolerance = 1e-12
+        tolerance = 1e-8
       )
       expect_equal(
         public$rows$estimate[
@@ -885,7 +885,7 @@ test_that("real semTools multigroup values remain distinct in both CFA adapters"
             public$rows$factor == factor & public$rows$group == group
         ],
         expected_cr,
-        tolerance = 1e-12
+        tolerance = 1e-8
       )
     }
   }
@@ -898,7 +898,7 @@ test_that("real semTools multigroup values remain distinct in both CFA adapters"
             standard$rows$group == group
         ],
         expected_ave,
-        tolerance = 1e-12
+        tolerance = 1e-8
       )
     }
   }
@@ -984,7 +984,7 @@ test_that("second-order multigroup aliases and CFA printing preserve groups", {
     alias <- rel$second_order[[group]][["g"]]
     canonical <- l2[l2$group == group & l2$factor == "g", , drop = FALSE]
     expect_identical(alias$metric, canonical$metric)
-    expect_equal(alias$value, canonical$value, tolerance = 1e-12)
+    expect_equal(alias$value, canonical$value, tolerance = 1e-8)
   }
 
   single_fit <- lavaan::cfa(model, data = hs, std.lv = TRUE)

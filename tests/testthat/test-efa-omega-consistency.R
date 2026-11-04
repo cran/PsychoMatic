@@ -15,7 +15,7 @@ test_that("EFA omega shares standalone reliability estimation for each dimension
     efa <- PsychoMatic:::.efa_reliability(d, distribution)$F1
     expected <- standalone$coefficients$estimate[standalone$coefficients$coefficient == "omega"]
     expect_true(is.finite(expected))
-    expect_equal(efa$omega, expected, tolerance = 1e-10)
+    expect_equal(efa$omega, expected, tolerance = 1e-7)
     expect_identical(efa$omega_status, "ok")
     expect_equal(efa$omega_diagnostics$n, sum(complete.cases(d)))
   }

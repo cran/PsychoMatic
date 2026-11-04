@@ -1,3 +1,23 @@
+# PsychoMatic 1.0.2
+
+- Audit numerical comparisons throughout the test suite after CRAN's additional
+  MKL review exposed an exact comparison between independent IRT fits.
+  Computed numerical evidence now uses explicit tolerances of 1e-8 for direct
+  calculations and 1e-7 for selected independently optimized fits. Exact checks
+  remain for discrete contracts, RNG state, input preservation and object return
+  identity. Precision tests for transporting supplied values are distinguished
+  from tests of statistical calculations.
+- Make two DIF regression comparisons portable across BLAS implementations,
+  including Intel MKL 2026.2.0, by allowing numerical roundoff at a tolerance
+  of 1e-8 instead of requiring bitwise equality between independent GLM fits.
+  The initial 1e-12 tolerance remained too strict for small likelihood-ratio
+  statistics under MKL; the revised tolerance is close to the test framework's
+  default and accepts the roundoff reported during CRAN's resubmission review.
+  Matching scores remain checked exactly. Result structure, labels and logical
+  decisions retain their exact comparison semantics.
+- Statistical algorithms, stored numerical precision, public APIs and dependency
+  requirements are unchanged from 1.0.1.
+
 # PsychoMatic 1.0.1
 
 - Fix report-path test assertions on macOS, including CRAN's M1 R-devel

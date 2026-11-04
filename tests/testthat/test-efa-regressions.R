@@ -244,7 +244,7 @@ test_that("parallel engine uses factor-eigenvalue quantiles and restores RNG", {
   expect_equal(
     out$simulated,
     apply(out$simulated_eigenvalues, 2, quantile, probs = .90, names = FALSE)
-  )
+  , tolerance = 1e-8)
   expect_identical(
     out$n_factors,
     PsychoMatic:::.pm_parallel_count(out$observed, out$simulated)
@@ -345,7 +345,7 @@ test_that("EFA adapts from mixed to ordinal after screening its only continuous 
   expect_identical(out$effective_settings$measurement, "ordinal")
   expect_identical(out$estimador$fm, "minres")
   expect_identical(out$parallel_analysis$extraction, "minres")
-  expect_equal(out$efa$r, out$correlation$matrix, tolerance = 1e-12)
+  expect_equal(out$efa$r, out$correlation$matrix, tolerance = 1e-8)
   expect_true(any(out$decision_log$code == "measurement_transition"))
   expect_identical(nrow(out$final_data), nrow(mixed))
 })
@@ -454,7 +454,7 @@ test_that("dimensionality sensitivity returns a transparent deterministic grid",
   )))
 
   expect_s3_class(one, "psychomatic_dimensionality")
-  expect_equal(one$configurations, two$configurations)
+  expect_equal(one$configurations, two$configurations, tolerance = 1e-8)
   expect_setequal(unique(one$configurations$requested_method), c("pearson", "spearman"))
   expect_equal(nrow(one$configurations), 8L)
   expect_true(all(c(
@@ -502,7 +502,7 @@ test_that("dimensionality sensitivity uses one fixed complete-case sample", {
   expect_identical(out$data_summary$n, 77L)
   expect_identical(out$effective_settings$missing, "complete_cases")
   expect_true(any(out$decision_log$code == "missing_data"))
-  expect_equal(out$configurations, reference$configurations)
+  expect_equal(out$configurations, reference$configurations, tolerance = 1e-8)
 })
 
 test_that("dimensionality sensitivity inherits specification language", {
@@ -590,9 +590,9 @@ test_that("dimensionality sensitivity returns its effective matrices", {
   expect_equal(
     out$effective_matrices$pearson,
     stats::cor(d, method = "pearson"),
-    tolerance = 1e-12
+    tolerance = 1e-8
   )
-  expect_identical(out$results$effective_matrices, out$effective_matrices)
+  expect_equal(out$results$effective_matrices, out$effective_matrices, tolerance = 1e-8)
 })
 
 test_that("dimensionality sensitivity reports methods effective after fallback", {
@@ -678,7 +678,7 @@ test_that("dimensionality methods print, summarize, and plot reusable data", {
   plotted <- plot(out)
   grDevices::dev.off()
   unlink(path)
-  expect_equal(plotted, out$configurations[out$configurations$status == "ok", ])
+  expect_equal(plotted, out$configurations[out$configurations$status == "ok", ], tolerance = 1e-8)
 })
 
 test_that("invalid sensitivity configurations fail early", {

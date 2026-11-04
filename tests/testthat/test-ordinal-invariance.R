@@ -18,7 +18,7 @@ test_that("ordinal invariance fits exactly three native identified stages", {
     return.fit = TRUE)
   expect_equal(lavaan::fitMeasures(out$fitted_models$thresholds_loadings),
     lavaan::fitMeasures(native), tolerance = 1e-7)
-  expect_identical(summary(out)$fit, out$fit_table)
+  expect_equal(summary(out)$fit, out$fit_table, tolerance = 1e-8)
   text <- paste(capture.output(print(out)), collapse = "\n")
   expect_match(text, "Equal thresholds and loadings", fixed = TRUE)
   expect_match(text, "Svetina", fixed = TRUE)

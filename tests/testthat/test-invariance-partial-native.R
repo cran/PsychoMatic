@@ -25,10 +25,10 @@ test_that("partial targets share native settings and fit values with complete in
       expect_false(lavaan::lavInspect(partial$models$partial$fit, "options")$std.lv)
       fm <- lavaan::fitMeasures(native)
       row <- partial$fit_table[partial$fit_table$role == "partial", ]
-      expect_equal(row$cfi, unname(fm[paste0("cfi.", variant)]))
-      expect_equal(row$rmsea, unname(fm[paste0("rmsea.", variant)]))
-      expect_equal(row$chi2, unname(fm["chisq.scaled"]))
-      expect_equal(row$srmr, unname(fm["srmr"]))
+      expect_equal(row$cfi, unname(fm[paste0("cfi.", variant)]), tolerance = 1e-7)
+      expect_equal(row$rmsea, unname(fm[paste0("rmsea.", variant)]), tolerance = 1e-7)
+      expect_equal(row$chi2, unname(fm["chisq.scaled"]), tolerance = 1e-7)
+      expect_equal(row$srmr, unname(fm["srmr"]), tolerance = 1e-7)
       for (language in c("eng", "esp")) {
         text <- paste(unlist(.pm_analysis_sections(partial, language)$sections), collapse = " ")
         expect_match(text, variant, fixed = TRUE)
@@ -87,8 +87,8 @@ test_that("native scalar and strict releases match lavaan and preserve matched p
     if (isTRUE(comparison$comparable)) {
       fm_previous <- lavaan::fitMeasures(out$models$prerequisite_matched$fit)
       fm_partial <- lavaan::fitMeasures(native)
-      expect_equal(comparison$delta_cfi, unname(fm_partial["cfi.robust"] - fm_previous["cfi.robust"]))
-      expect_equal(comparison$delta_rmsea, unname(fm_partial["rmsea.robust"] - fm_previous["rmsea.robust"]))
+      expect_equal(comparison$delta_cfi, unname(fm_partial["cfi.robust"] - fm_previous["cfi.robust"]), tolerance = 1e-7)
+      expect_equal(comparison$delta_rmsea, unname(fm_partial["rmsea.robust"] - fm_previous["rmsea.robust"]), tolerance = 1e-7)
     }
   }
 })

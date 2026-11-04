@@ -10,7 +10,7 @@ test_that('ESEM CFA reference has the same data and effective options', {
   expect_equal(lavaan::coef(cmp$fit), lavaan::coef(native), tolerance = 1e-7)
   expect_equal(lavaan::lavInspect(cmp$fit, 'case.idx'), lavaan::lavInspect(out$fit, 'case.idx'))
   expect_false(any(c('aic', 'bic', 'winner', 'lrt') %in% names(cmp$table)))
-  expect_equal(cmp$table$delta, cmp$table$esem - cmp$table$cfa)
+  expect_equal(cmp$table$delta, cmp$table$esem - cmp$table$cfa, tolerance = 1e-8)
   expect_match(out$manuscript_text, 'descriptive')
   expect_error(esem_auto(d, items = 1:9, n_factors = 3, rotation = 'geomin',
     compare_cfa = TRUE, verbose = FALSE), 'factors')

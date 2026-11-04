@@ -125,7 +125,7 @@ test_that("continuous stages match direct cumulative lavaan fits", {
     expect_equal(out$fit_table[stage, "df"],
                  unname(lavaan::fitMeasures(direct, "df")), info = stage)
     expect_equal(out$fit_table[stage, "cfi"],
-                 unname(lavaan::fitMeasures(direct, "cfi")), tolerance = 1e-10,
+                 unname(lavaan::fitMeasures(direct, "cfi")), tolerance = 1e-7,
                  info = stage)
   }
   expect_fit_records_use_effective_metadata(
